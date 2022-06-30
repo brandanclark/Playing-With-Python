@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jun 29 22:04:57 2022
+Script to practice creating Confidence Interval in Python
+From: https://towardsdatascience.com/a-complete-guide-to-confidence-interval-and-examples-in-python-ff417c5cb593
+@author: brandanclark
+"""
+
+""" import necessary packages"""
+
+import pandas as pd
+import numpy as np
+
+"""create dataframe based off heart.csv"""
+
+df = pd.read_csv('/Users/brandanclark/Desktop/GitHubFolder/heart.csv')
+df
+
+"""replace the 1's and 0's in the sex column with Male and Female in a new column"""
+
+df['Sex1'] = df.sex.replace({1: "Male", 0: "Female"})
+
+"""update target column, set 1 = yes, 0 = no"""
+
+df['target'] = df.target.replace({1: "Yes", 0: "No"})
+
+"""make a new dataframe with just target and Sex1 columns"""
+
+dy = df[['target', 'Sex1']].copy()
+
+"""crosstab of males and females with and without heart disease"""
+
+pd.crosstab(dy.target, dy.Sex1)
+
+"""number of females with heart disease is 226, calculate the proportion"""
+
+p_fm = 226/(86+226)
+
+"""female population = 86+226"""
+
+n = 86+226
+
+""""calculate standard error"""
+
+se_female = np.sqrt(p_fm * (1 - p_fm) / n)
+
+"""use the z_score of 1.96 to calculate lower and upper confidence intervals"""
+
+z_score = 1.96
+lcb = p_fm - z_score* se_female
+ucb = p_fm + z_score* se_female 
+
+"""testing using statsmodels library"""
+
+import statsmodels.api as sm
+sm.stats.proportion_confint(n * p_fm, n)
+
+"""confirmed, it works!"""
