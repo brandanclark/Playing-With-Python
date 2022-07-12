@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jul 11 21:01:23 2022
+Visualizing Netflix Data from: https://towardsdatascience.com/visualizing-netflix-data-with-python-bca60a2632d9
+@author: brandanclark
+"""
+
+#install packages logic run in Terminal
+"""
+pip install pandas
+pip install plotly
+"""
+#import packages
+import plotly.express as px
+import pandas as pd
+
+#add plotly offline to allow for plot() functionality
+from plotly.offline import plot
+
+#create df reading file
+df= pd.read_csv("/Users/brandanclark/Desktop/GitHubFolder/netflix_titles.csv")
+
+#drop duplicates
+df.drop_duplicates(inplace=True)
+
+#create pie chart
+pie_fig = px.pie(
+    data_frame=df,
+    names='type',
+    hole=0.8,
+    title='TV Show vs. Movie')
+
+#create bar chart
+bar_fig = px.bar(
+    data_frame=df.groupby(["type"], as_index=False).agg(count=pd.NamedAgg(column="type", aggfunc="count")),
+    x='type',
+    y='count',
+    color='type',
+    title='TV Show vs. Movie')
+
+#show charts
+plot(pie_fig)
+plot(bar_fig)
+
+#try a different type of pie chart, focusing on rating
+pie_fig2 = px.pie(
+    data_frame=df,
+    names='rating',
+    hole=0.1,
+    title = 'Netflix Titles by Rating')
+
+#show new pie chart
+plot(pie_fig2)
+
+#try a different type of bar, focusing on release year
+bar_fig2 = px.bar(
+    data_frame=df.groupby(["release_year"], as_index=False).agg(count=pd.NamedAgg(column="release_year", aggfunc="count")),
+    x='release_year',
+    y='count',
+    color='count',
+    title='Netflix Titles by Release Year')
+
+#show new bar chart
+plot(bar_fig2)
