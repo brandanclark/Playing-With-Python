@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Aug 1
+Visualizing Data from MEPS HC-2019 file to prep for interview
+@author: brandanclark
+"""
+
+
+#install packages logic run in Terminal
+"""
+pip install pandas
+pip install plotly
+"""
+#import packages
+import plotly.express as px
+import pandas as pd
+
+#add plotly offline to allow for plot() functionality
+from plotly.offline import plot
+
+#create df reading file
+df= pd.read_csv("/Users/brandanclark/Downloads/h219.csv")
+
+#drop duplicates
+df.drop_duplicates(inplace=True)
+
+#new dataframe removing bad data from CHBMIX42 column
+filtered_df = df.loc[df['DIABAGED'] > 0]
+
+#create bar chart
+bar_fig = px.bar(
+    data_frame=filtered_df.groupby(["DIABAGED"], as_index=False).agg(count=pd.NamedAgg(column="DIABAGED", aggfunc="count")),
+    x='DIABAGED',
+    y='count',
+    color='count',
+    title='Age of Diabetes Diagnosis')
+
+#show chart
+plot(bar_fig)
+
